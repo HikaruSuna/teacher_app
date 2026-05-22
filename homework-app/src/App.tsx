@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { requestOtp, verifyOtp, fetchTasks, submitTask,  } from './mockApi.ts';
+import { requestOtp, verifyOtp, fetchTasks, submitTask, type Task } from './mockApi';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(null);
