@@ -2,15 +2,6 @@
 // src/api.ts
 // ※フロントエンドからバックエンド（サーバー）へリクエストを送るためのファイルです
 
-declare var process: {
-  env: {
-    NEXT_PUBLIC_API_URL?: string;
-    NEXT_PUBLIC_SUPABASE_URL?: string;
-    NEXT_PUBLIC_SUPABASE_ANON_KEY?: string;
-    [key: string]: string | undefined;
-  };
-};
-
 export type TaskStatus = 'pending' | 'submitted' | 'approved';
 export interface Task {
   id: string;
@@ -19,11 +10,7 @@ export interface Task {
   status: TaskStatus;
 }
 
-// 本番環境のバックエンドURLを環境変数から取得（なければローカル開発用）
-// 実行時に process がない環境での ReferenceError を防ぐ
-const API_BASE_URL = (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) 
-  ? process.env.NEXT_PUBLIC_API_URL 
-  : 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api';
 
 // 1. OTPリクエスト（本番用）
 // ...existing code...
