@@ -1,0 +1,153 @@
+:root {
+  font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  color: #132238;
+  background: #eaf1f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at 16% 18%, rgb(38 116 160 / 16%), transparent 34%),
+    linear-gradient(145deg, #f7fbff 0%, #e5eef7 54%, #dbe8f2 100%);
+}
+
+.status-panel {
+  width: min(100%, 560px);
+  padding: clamp(28px, 6vw, 52px);
+  border: 1px solid rgb(19 34 56 / 9%);
+  border-radius: 24px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow: 0 24px 70px rgb(38 66 91 / 14%);
+  backdrop-filter: blur(16px);
+}
+
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  color: #fff;
+  background: #176b87;
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #597087;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+h1 {
+  margin: 0 0 34px;
+  font-family: Georgia, "Yu Mincho", serif;
+  font-size: clamp(2.75rem, 10vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.connection {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f2f5f8;
+}
+
+.connection__dot {
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #8695a3;
+}
+
+.connection--connected {
+  color: #124f41;
+  background: #e7f5ef;
+}
+
+.connection--connected .connection__dot {
+  background: #1b936f;
+  box-shadow: 0 0 0 5px rgb(27 147 111 / 12%);
+}
+
+.connection--error {
+  color: #842f32;
+  background: #fbecee;
+}
+
+.connection--error .connection__dot {
+  background: #bd4e55;
+}
+
+.connection strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.connection p {
+  margin: 4px 0 0;
+  color: currentColor;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  opacity: 0.78;
+}
+
+.service-list {
+  margin: 24px 0 0;
+}
+
+.service-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 2px;
+  border-bottom: 1px solid #dce4eb;
+}
+
+.service-list dt {
+  color: #5d7082;
+}
+
+.service-list dd {
+  margin: 0;
+  color: #176b55;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .app-shell {
+    padding: 16px;
+  }
+
+  .status-panel {
+    border-radius: 18px;
+  }
+}

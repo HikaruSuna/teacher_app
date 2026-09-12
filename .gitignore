@@ -1,10 +1,11 @@
-node_modules
-.env.local
+node_modules/
 .env
+.env.local
 .env.*
 !.env.example
 dist/
 dist-ssr/
+coverage/
 *.local
 *.log
 .DS_Store
