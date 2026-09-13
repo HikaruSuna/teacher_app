@@ -8,29 +8,44 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/HikaruSuna/teacher_app/backend/internal/auth"
 )
 
 type Database interface {
 	Ping(context.Context) error
 }
 
-type Server struct {
-	database       Database
-	frontendOrigin string
-	logger         *slog.Logger
+type Authentication interface {
+	Login(context.Context, string, string) (auth.User, auth.Session, error)
+	CurrentUser(context.Context, string) (auth.User, error)
+	Logout(context.Context, string) error
 }
 
-func New(database Database, frontendOrigin string, logger *slog.Logger) http.Handler {
+type Server struct {
+	database       Database
+	authentication Authentication
+	frontendOrigin string
+	logger         *slog.Logger
+	loginLimiter   *loginLimiter
+}
+
+func New(database Database, authentication Authentication, frontendOrigin string, logger *slog.Logger) http.Handler {
 	server := &Server{
 		database:       database,
+		authentication: authentication,
 		frontendOrigin: frontendOrigin,
 		logger:         logger,
+		loginLimiter:   newLoginLimiter(5, 15*time.Minute),
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", server.health)
+	mux.HandleFunc("POST /api/auth/login", server.login)
+	mux.HandleFunc("GET /api/auth/me", server.currentUser)
+	mux.HandleFunc("POST /api/auth/logout", server.logout)
 
-	return server.cors(server.requestLog(server.securityHeaders(mux)))
+	return server.cors(server.requestLog(server.securityHeaders(server.sameOrigin(mux))))
 }
 
 func (s *Server) health(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +95,17 @@ func (s *Server) securityHeaders(next http.Handler) http.Handler {
 	})
 }
 
+func (s *Server) sameOrigin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if r.Method != http.MethodGet && r.Method != http.MethodHead && origin != "" && origin != s.frontendOrigin {
+			s.writeError(w, http.StatusForbidden, "forbidden_origin", "request origin is not allowed")
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (s *Server) requestLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		startedAt := time.Now()
@@ -105,6 +131,12 @@ func (s *Server) writeJSON(w http.ResponseWriter, status int, value any) {
 	if err := json.NewEncoder(w).Encode(value); err != nil {
 		s.logger.Error("write JSON response", "error", err)
 	}
+}
+
+func (s *Server) writeError(w http.ResponseWriter, status int, code, message string) {
+	s.writeJSON(w, status, map[string]any{
+		"error": map[string]string{"code": code, "message": message},
+	})
 }
 
 func newRequestID() string {

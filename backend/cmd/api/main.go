@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/HikaruSuna/teacher_app/backend/internal/auth"
 	"github.com/HikaruSuna/teacher_app/backend/internal/config"
 	"github.com/HikaruSuna/teacher_app/backend/internal/database"
 	"github.com/HikaruSuna/teacher_app/backend/internal/httpserver"
@@ -27,10 +28,18 @@ func main() {
 		os.Exit(1)
 	}
 	defer pool.Close()
+	userRepository := auth.NewPostgresUserRepository(pool)
+	sessionRepository := auth.NewPostgresSessionRepository(pool)
+	sessionService, err := auth.NewSessionService(sessionRepository, 12*time.Hour)
+	if err != nil {
+		logger.Error("create session service", "error", err)
+		os.Exit(1)
+	}
+	authentication := auth.NewService(userRepository, sessionService)
 
 	server := &http.Server{
 		Addr:              settings.HTTPAddr,
-		Handler:           httpserver.New(pool, settings.FrontendOrigin, logger),
+		Handler:           httpserver.New(pool, authentication, settings.FrontendOrigin, logger),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,

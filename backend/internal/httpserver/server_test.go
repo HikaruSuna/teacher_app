@@ -24,7 +24,7 @@ func testLogger() *slog.Logger {
 }
 
 func TestHealth(t *testing.T) {
-	handler := New(databaseStub{}, "http://localhost:5173", testLogger())
+	handler := New(databaseStub{}, nil, "http://localhost:5173", testLogger())
 	request := httptest.NewRequest(http.MethodGet, "/api/health", nil)
 	request.Header.Set("Origin", "http://localhost:5173")
 	response := httptest.NewRecorder()
@@ -46,7 +46,7 @@ func TestHealth(t *testing.T) {
 }
 
 func TestHealthWhenDatabaseIsUnavailable(t *testing.T) {
-	handler := New(databaseStub{err: errors.New("unavailable")}, "http://localhost:5173", testLogger())
+	handler := New(databaseStub{err: errors.New("unavailable")}, nil, "http://localhost:5173", testLogger())
 	request := httptest.NewRequest(http.MethodGet, "/api/health", nil)
 	response := httptest.NewRecorder()
 
