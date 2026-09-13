@@ -28,6 +28,5 @@ func Open(ctx context.Context, databaseURL string) (*pgxpool.Pool, error) {
 		pool.Close()
 		return nil, fmt.Errorf("ping database: %w", err)
 	}
-
 	return pool, nil
 }
