@@ -25,5 +25,6 @@ test:
 check:
 	cd backend && go test ./...
 	cd backend && go vet ./...
+	npm --prefix frontend run test
 	npm --prefix frontend run lint
 	npm --prefix frontend run build
